@@ -1,6 +1,6 @@
 # coding=utf-8
 import database
-import xlw
+import xlwings as xw
 #当中是你的程序
 def main():
     msg = database.SQLServer(server="127.0.0.1", user="sa", password="houweikang123", database="QXT")
