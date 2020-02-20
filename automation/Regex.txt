@@ -1,0 +1,78 @@
+\d 0到9的任何数字
+\D 除0到9的数字以外的任何字符
+\w 任何字母、数字或下划线字符（可以认为是匹配“单词”字符）
+\W 除字母、数字和下划线以外的任何字符
+\s 空格、制表符或换行符（可以认为是匹配“空白”字符）
+\S 除空格、制表符和换行符以外的任何字符
+
+匹配范围：[0-5] [aeiou]  [^aeiou]
+匹配开始：^hello
+匹配结束：hello$
+通配符：. #匹配除换行符以外的所有字符，匹配一个字符
+		.rat  匹配 cat  hat  lat  mat
+匹配所有字符： .*
+
+贪心和非贪心：
+	#贪心匹配尽可能小的字符 加?
+	>>> nongreedyRegex = re.compile( r'<.*?>') 
+	>>> mo = nongreedyRegex.search('< To serve man> for dinner.>') 
+	>>> mo.group() 
+		'< To serve man>' 
+	#非贪心会匹配尽可能大的字符
+	>>> greedyRegex = re.compile( r'<.*>') 
+	>>> mo = greedyRegex.search('< To serve man> for dinner.>') 
+	>>> mo.group() 
+		'< To serve man> for dinner.>'
+
+小结：
+?匹配零次或一次前面的分组。
+*匹配零次或多次前面的分组。
++匹配一次或多次前面的分组。
+{n}匹配n次前面的分组。
+{n,}匹配n次或更多前面的分组。
+{,m}匹配零次到m次前面的分组。
+{n,m}匹配至少n次、至多m次前面的分组。
+{n,m}?或*?或+?对前面的分组进行非贪心匹配。
+^spam意味着字符串必须以spam开始。
+spam$意味着字符串必须以spam结束。
+.匹配所有字符，换行符除外。
+\d、\w和\s分别匹配数字、单词和空格。
+\D、\W和\S分别匹配非数字、单词和空格外的所有字符。
+[abc]匹配方括号内的任意字符（诸如a、b或c）。
+[^abc]匹配不在方括号内的任意字符。
+
+re.DOTALL：
+	点-星将匹配除换行外的所有字符。通过传入re.DOTALL作为re.compile()的第二个参数，可以让句点字符匹配所有字符，包括换行字符。
+	>>> noNewlineRegex = re.compile('.*') 
+	>>> noNewlineRegex.search(' Serve the public trust.\nProtect the innocent.\nUphold the law.').group()
+		'Serve the public trust.'
+		
+	>>>newlineRegex = re.compile('.*', re.DOTALL) 
+	>>>newlineRegex.search('Serve the public trust.\nProtect the innocent.\nUphold the law.').group() 
+	'Serve the public trust.\nProtect the innocent.\nUphold the law.'
+
+re.I 或 re.IGNORECASE
+	不区分大小写
+	>>> robocop = re.compile(r'robocop', re.I)
+	>>> robocop.search('RoboCop is part man, part machine, all cop.').group() 
+	'RoboCop'
+
+sub() 替换字符串
+	>>> namesRegex = re.compile( r'Agent \w+')
+	>>> namesRegex.sub('CENSORED', 'Agent Alice gave the secret documents to Agent Bob.') 
+	'CENSORED gave the secret documents to CENSORED.'
+	
+	在sub()的第一个参数中，可以输入\1、\2、\3……。表示“在替换中输入分组1、2、3……的文本”。
+	>>> agentNamesRegex = re.compile(r'Agent (\w)\w*') 
+	>>> agentNamesRegex.sub(r'\1****', 'Agent Alice told Agent Carol that Agent Eve knew Agent Bob was a double agent.') 
+	'A**** told C**** that E**** knew B**** was a double agent.'
+
+忽略正则表达式字符串中的空白符和注释，可以向re.compile()传入变量re.VERBOSE，作为第二个参数。
+	phoneRegex = re. compile( r'''(
+							(\d{3}|\(\d{3}\))?      	#area code 
+							(\s|-|\.)?                 	# separator
+							\d{3} 						# first 3 digits 
+							(\s|-|\.)  					#separator 
+							\d{4} 						# last 4 digits 
+							(\s*(ext|x| ext.) \s*\d{2,5})? 	# extension 
+							)''', re.VERBOSE)
